@@ -10,28 +10,28 @@ build_libjpeg_turbo(){
         ANDROID_ARM_MODE=arm
         TOOLCHAIN=${NDK_PATH}/toolchains/llvm/prebuilt/${BUILD_PLATFORM}
         ANDROID_ASM_FLAGS="--target=arm-linux-androideabi${ANDROID_VERSION}"
-        # ANDROID_CFLAGS="-march=armv7-a -mfloat-abi=softfp -fprefetch-loop-arrays -mfpu=neon -mthumb -D__ANDROID__ -D__ARM_ARCH_7__  --sysroot=${SYSROOT}"
+        TARGET=arm
     elif [ $1 = "arm64" ]; then
         HOST=aarch64-linux-android
         ANDROID_ABI=arm64-v8a
         ANDROID_ARM_MODE=arm
         TOOLCHAIN=${NDK_PATH}/toolchains/llvm/prebuilt/${BUILD_PLATFORM}
         ANDROID_ASM_FLAGS="--target=arm-linux-android${ANDROID_VERSION}"
-      # ANDROID_CFLAGS="--target=arm-linux-androideabi${ANDROID_VERSION}"
+        TARGET=aarch64
     elif [ $1 = "x86" ]; then
         HOST=i686-linux-android
         ANDROID_ABI=x86
         ANDROID_ARM_MODE=
         TOOLCHAIN=${NDK_PATH}/toolchains/llvm/prebuilt/${BUILD_PLATFORM}
         ANDROID_ASM_FLAGS=""
-       # ANDROID_CFLAGS="--sysroot=${SYSROOT}"
+        TARGET=x86
     elif [ $1 = "x86_64" ]; then
         HOST=x86_64-linux-android
         ANDROID_ABI=x86_64
         ANDROID_ARM_MODE=
         TOOLCHAIN=${NDK_PATH}/toolchains/llvm/prebuilt/${BUILD_PLATFORM}
         ANDROID_ASM_FLAGS=""
-       # ANDROID_CFLAGS="--sysroot=${SYSROOT}"
+        TARGET=x86_64
     fi
 
 
@@ -42,19 +42,16 @@ build_libjpeg_turbo(){
 
     BUILD_PATH="${ROOT_PATH}/${PROGRAM_NAME}/build/$1"
     mkdir -p "${BUILD_PATH}"
+
     cd "${BUILD_PATH}"
-    make clean
-    cmake -G"Unix Makefiles" \
-      -DANDROID_ABI=${ANDROID_ABI} \
-      -DANDROID_ARM_MODE=${ANDROID_ARM_MODE} \
-      -DANDROID_PLATFORM=android-${ANDROID_VERSION} \
-      -DANDROID_TOOLCHAIN=${TOOLCHAIN} \
-      -DCMAKE_ASM_FLAGS=${ANDROID_ASM_FLAGS} \
-      -DCMAKE_TOOLCHAIN_FILE=${NDK_PATH}/build/cmake/android.toolchain.cmake \
-      -DCMAKE_INSTALL_PREFIX="${INSTALL_PATH}" \
-      ../../
-    make
-    make install
+    # make clean
+    meson ../../ --cross-file=../../package/crossfiles/${TARGET}-android.meson \
+        --default-library=static \
+        --buildtype release \
+        --prefix "${INSTALL_PATH}" \
+        
+    ninja
+    meson install
     cd ${OLD_PWD}
 }
 
@@ -68,10 +65,11 @@ NDK_PATH=/Users/tokenfun/Library/Android/sdk/ndk-bundle
 BUILD_PLATFORM=darwin-x86_64
 ROOT_PATH=/Users/tokenfun/taurus/bitdisk/gitlab/bytezero/thirdpartys/
 INSTALL_PREFIX=/Users/tokenfun/taurus/bitdisk/gitlab/bytezero/thirdpartys/android
-PROGRAM_NAME=libjpeg-turbo
+PROGRAM_NAME=dav1d
 
 TOOLCHAIN_VERSION=4.9
 ANDROID_VERSION=21
+export PATH=$PATH:/Users/tokenfun/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/
 #### linux.
 #NDK_PATH=$NDK_PATH
 #BUILD_PLATFORM=linux-x86_64
@@ -86,7 +84,7 @@ if [ $# -lt 1 ]; then
 fi
 
 if [ $1 = "copy" ] || [ $1 = "cp" ]; then
-    LIB_NAME=libjpeg.a
+    LIB_NAME=libdav1d.a
     CPTO_PATH="${ROOT_PATH}/libheif/java/libheif_android/app/"
     echo "copy ${LIB_NAME} to program ${CPTO_PATH}"
     cp ${PROGRAM_NAME}/arm64-v8a/lib/${LIB_NAME} ${CPTO_PATH}/libs/arm64-v8a/

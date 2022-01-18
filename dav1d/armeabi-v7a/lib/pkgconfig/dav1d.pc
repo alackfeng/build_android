@@ -1,0 +1,9 @@
+prefix=/Users/tokenfun/taurus/bitdisk/gitlab/bytezero/thirdpartys/android/dav1d/armeabi-v7a
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libdav1d
+Description: AV1 decoding library
+Version: 0.8.2
+Libs: -L${libdir} -ldav1d -pthread
+Cflags: -I${includedir} -pthread
