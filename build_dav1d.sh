@@ -89,8 +89,9 @@ if [ $1 = "copy" ] || [ $1 = "cp" ]; then
     echo "copy ${LIB_NAME} to program ${CPTO_PATH}"
     cp ${PROGRAM_NAME}/arm64-v8a/lib/${LIB_NAME} ${CPTO_PATH}/libs/arm64-v8a/
     cp ${PROGRAM_NAME}/armeabi-v7a/lib/${LIB_NAME} ${CPTO_PATH}/libs/armeabi-v7a/
-    cp ${PROGRAM_NAME}/x86/${LIB_NAME} ${CPTO_PATH}/libs/x86/
+    cp ${PROGRAM_NAME}/x86/lib/${LIB_NAME} ${CPTO_PATH}/libs/x86/
     cp ${PROGRAM_NAME}/x86_64/lib/${LIB_NAME} ${CPTO_PATH}/libs/x86_64/
+    echo "copy success, ${LIB_NAME} to ${CPTO_PATH}"
 
 elif [ $1 = "arm" ] || [ $1 = "arm64" ] || [ $1 = "x86" ] || [ $1 = "x86_64" ]; then
     build_libjpeg_turbo $1
